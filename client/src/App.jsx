@@ -1,0 +1,61 @@
+import React, { useState } from 'react'
+import Home from './pages/Home'
+import { Route, Routes } from 'react-router-dom'
+import Presets from './pages/Presets'
+import Gallary from './pages/Gallary'
+import Sidebar from './components/Sidebar'
+import Navbar from './components/Navbar'
+import Login from './pages/Login'
+import {Toaster} from 'react-hot-toast'
+import { ProtectedRoute } from './context/protectedRoute'
+import Profile from './pages/Profile'
+
+const App = () => {
+
+  const [sidebarOpen,setSidebarOpen]=useState(false)
+  const [showLogin,setShowLogin]=useState(false);
+
+  return (
+    <>
+    <Toaster/>
+
+    {showLogin && <Login setShowLogin={setShowLogin}/>}
+
+    <div className='lg:flex'>
+       <Sidebar  onCross={()=>{setSidebarOpen(false)}} sidebarOpen={sidebarOpen} />
+       <div className='flex-1'>
+            <Navbar onMenu={()=>{setSidebarOpen(true)}} sidebarOpen={sidebarOpen} setShowLogin={setShowLogin}/>      
+             <Routes>
+                <Route path='/' element={<Home/>} />
+                <Route path='/project/:projectId' element={<Home/>} />
+                <Route path='/presets' element={<Presets/>} />
+                <Route path='/gallary' element={<ProtectedRoute><Gallary/></ProtectedRoute>} />
+                <Route path='/profile' element={<ProtectedRoute><Profile/></ProtectedRoute>}/>
+              </Routes>
+       </div>
+    </div>
+
+    </>
+  )
+
+
+  // return (
+  //   <>
+  //     <div>
+
+
+  //     </div>
+
+
+  //     <div>
+  //       <Routes>
+  //         <Route path='/' element={<Home/>} />
+  //         <Route path='/presets' element={<Presets/>} />
+  //         <Route path='/gallary' element={<Gallary/>} />
+  //       </Routes>
+  //     </div>
+  //   </>
+  // )
+}
+
+export default App
