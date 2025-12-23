@@ -6,17 +6,55 @@ import Versions from '../components/Versions'
 import { Await, useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import toast from 'react-hot-toast'
+import { useLocation } from 'react-router-dom';
+import { useRef } from 'react';
 
 const Home = () => {
 
   const {projectId}=useParams();
-  const [working,setWorking]=useState(false)
+  const [isWorking,setIsWorking]=useState(false)
   const [loading,setLoading]=useState(false);
   const [projectObject,setProjectObject]=useState([]);
   const [selectedImage,setSelectedImage]=useState('');
   const [prompt,setPrompt]=useState('');
+  const location = useLocation();
+  const isPresetFlowRef = useRef(false);
+
 
   const navigate=useNavigate();
+
+ useEffect(() => {
+  const presetPrompt = location.state?.presetPrompt;
+  const presetImage = location.state?.presetImageFile;
+
+  if (presetPrompt && presetImage) {
+    console.log("✅ Preset flow detected");
+
+    isPresetFlowRef.current = true;   // 🔑 KEY LINE
+
+    setPrompt(presetPrompt);
+    setSelectedImage(presetImage);
+  }
+}, [location.state]);
+
+useEffect(() => {
+
+
+  if (
+    isPresetFlowRef.current &&
+    prompt &&
+    selectedImage
+  ) {
+
+
+    applyHandler();
+
+   
+    isPresetFlowRef.current = false;
+  }
+}, [prompt, selectedImage]);
+
+
   
   useEffect(()=>{
     const getProject=async()=>{
@@ -42,13 +80,15 @@ const Home = () => {
 
   },[]);
 
+
   const applyHandler=async()=>{
     //cases
     //project not present or present
     //editing or generating
 
     //project handle (creation) should be in backend 
-    setWorking(true);
+    setIsWorking(true);
+    
     setPrompt('');
     
     try {
@@ -67,16 +107,19 @@ const Home = () => {
         form.append("imageUrl",selectedImage);
       }
 
+      console.log(form);
       const {data}=await axios.post(endpoint,form,{withCredentials:true});
-      
+      console.log(data)
       if(!data.success){
         toast.error(data.message);
-        setWorking(false);
+        setIsWorking(false);
         return ;
       }  
 
       setProjectObject(data.project);
       setSelectedImage(data.project.lastImageId.imageUrl);
+      setIsWorking(false);
+
       
       if(data.isNewProject){
         navigate(`/project/${data.project._id}`);
@@ -87,13 +130,13 @@ const Home = () => {
       console.log("error in applyHandler",error);
 
     }
-    setWorking(false);
+    setIsWorking(false);
   }
 
     if(loading) return <div className='p-5 text-2xl'>Loading ....</div>
   return (
     <div className='bg-[#fcfcfd] min-h-[calc(100vh-4rem)] p-3 flex flex-col gap-3'>
-      <Editor selectedImage={selectedImage} setSelectedImage={setSelectedImage} working={working} prompt={prompt} setPrompt={setPrompt} applyHandler={applyHandler} />
+      <Editor selectedImage={selectedImage} setSelectedImage={setSelectedImage} isWorking={isWorking} prompt={prompt} setPrompt={setPrompt} applyHandler={applyHandler} />
       <Versions imagesArray={projectObject.editHistory} selectedImage={selectedImage} setSelectedImage={setSelectedImage}/>
     </div>
   )

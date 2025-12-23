@@ -1,50 +1,49 @@
 import React, { useEffect, useState } from "react";
-import { FaRegPenToSquare } from "react-icons/fa6";
-import { PiDownloadLight } from "react-icons/pi";
 import axios from "axios";
-import { downloadImage } from "../utils/downloadImage.js";
+import { useNavigate } from "react-router-dom";
 
-const Gallery = () => {
-  const filters = ["All", "Edited", "Generated"];
+const Projects = () => {
+  const filters = ["All", "Edit", "Generated"];
   const [activeFilter, setActiveFilter] = useState("All");
-  const [images, setImages] = useState([]);
+  const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
+  const navigate=useNavigate();
 
   const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
   // 🔹 Map filter → API
   const getEndpoint = (filter) => {
     switch (filter) {
-      case "Edited":
-        return "/api/user/edited-images";
+      case "Edit":
+        return "/api/user/edit-projects";
       case "Generated":
-        return "/api/user/generated-images";
+        return "/api/user/generated-projects";
       default:
-        return "/api/user/all-images";
+        return "/api/user/all-projects";
     }
   };
 
-  const getImages = async (filter) => {
+  const getProjects = async (filter) => {
     try {
       setLoading(true);
 
       const endpoint = `${BASE_URL}${getEndpoint(filter)}`;
 
       const res = await axios.get(endpoint, {
-        withCredentials: true, // IMPORTANT for auth cookie
+        withCredentials: true,
       });
 
-      setImages(res.data.images || []);
+      setProjects(res.data.projects || []);
     } catch (error) {
-      console.error("Error fetching images:", error);
+      console.error("Error fetching projects:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Initial load
+  // Initial load & filter change
   useEffect(() => {
-    getImages(activeFilter);
+    getProjects(activeFilter);
   }, [activeFilter]);
 
   return (
@@ -54,10 +53,10 @@ const Gallery = () => {
         <div className="flex flex-col md:flex-row items-center justify-between gap-5">
           <div className="w-full md:w-auto text-center md:text-left">
             <h2 className="text-xl font-semibold text-gray-800">
-              Your Creations
+              Your Projects
             </h2>
             <p className="text-sm text-gray-500">
-              Manage your edited and generated visuals
+              Manage your generate and edit workflows
             </p>
           </div>
 
@@ -82,35 +81,38 @@ const Gallery = () => {
       </section>
 
       {/* Content */}
-      <div className="p-4">
+      <div className="p-6">
         {loading ? (
-          <p className="text-center text-gray-500">Loading images...</p>
-        ) : images.length === 0 ? (
+          <p className="text-center text-gray-500">Loading projects...</p>
+        ) : projects.length === 0 ? (
           <p className="text-center text-gray-400">
-            No images found
+            No projects found
           </p>
         ) : (
-          <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-3 gap-4">
-            {images.map((img) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {projects.map((project) => (
               <div
-                key={img._id}
-                className="mb-4 rounded-lg overflow-hidden relative group"
-              >
-                <img
-                  src={img.imageUrl}
-                  alt="user image"
-                  className="w-full rounded-lg"
-                />
+  onClick={() => navigate(`/project/${project._id}`)}
+  className="group relative cursor-pointer rounded-xl overflow-hidden shadow-sm hover:shadow-md transition"
+>
+  <img
+    src={project.lastImage?.imageUrl}
+    className="w-full h-64 object-cover group-hover:scale-105 transition"
+  />
 
-                {/* Hover Actions */}
-                <div className="gap-4 items-center absolute top-2 right-2 bg-white rounded-lg p-2 hidden group-hover:flex shadow hover:bg-green-100">
-                  <PiDownloadLight
-                    className="text-xl cursor-pointer "
-                    title="Download"
-                    onClick={() => downloadImage(img.imageUrl) }
-                  />
-                </div>
-              </div>
+  {/* Meta overlay */}
+  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+    <div className="flex justify-between items-center">
+      <span className="text-xs text-white/90 bg-black/40 px-2 py-1 rounded-full">
+        {project.projectType}
+      </span>
+      <span className="text-xs text-white/70">
+        {new Date(project.updatedAt).toLocaleDateString()}
+      </span>
+    </div>
+  </div>
+</div>
+
             ))}
           </div>
         )}
@@ -119,4 +121,4 @@ const Gallery = () => {
   );
 };
 
-export default Gallery;
+export default Projects;

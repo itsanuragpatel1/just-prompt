@@ -1,8 +1,9 @@
 import { presetModel } from "../models/presetModel.js";
 
+
 const getAllPresets=async(req,res)=>{
     try {
-        const presets=await presetModel.find().select('-prompt');
+        const presets=await presetModel.find();
         
         res
         .status(200)

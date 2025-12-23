@@ -1,5 +1,5 @@
 import {Router} from 'express'
-import { editImage, generateImage, genImage } from '../controllers/imageController.js';
+import { genImage } from '../controllers/imageController.js';
 import { upload } from '../middlewares/multerMiddleware.js';
 import { auth } from '../middlewares/authMiddleware.js';
 

@@ -20,6 +20,7 @@ const Navbar = ({onMenu,setShowLogin}) => {
 
   const pageTitles={
     '/':'Editor',
+    '/project':'Editor',
     '/presets':'Trending Presets',
     '/gallary':'My Gallary',
     '/profile':'Profile'
@@ -49,7 +50,7 @@ const Navbar = ({onMenu,setShowLogin}) => {
             <IoMenu  onClick={onMenu} className='text-2xl cursor-pointer lg:hidden' />
             <h2 className='text-xl lg:hidden'>Just Prompt</h2>
             {location1.pathname=='/'? <FaRegPenToSquare className='text-xl hidden lg:block' /> : (location1.pathname=='/presets'?  <VscFlame className='text-xl hidden lg:block' />:  <IoMdImages className='text-xl hidden lg:block' /> )}
-            <h2 className='text-xl hidden lg:block'>{pageTitles[location1.pathname]}</h2>
+            <h2 className='text-xl hidden lg:block'>{location1.pathname.startsWith('/project')?'Editor':pageTitles[location1.pathname]}</h2>
         </div>
         <div>
           { 

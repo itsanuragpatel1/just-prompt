@@ -4,15 +4,15 @@ import { LuImageUpscale } from "react-icons/lu";
 import { MdLabel, MdOutlineAutoFixHigh } from "react-icons/md";
 import { PiDownloadLight } from "react-icons/pi";
 import { TbFaceId } from "react-icons/tb";
-import placeholder from "../assets/placeholder.png"
-import farmer from '../assets/farmer.avif'
 import { MdAutoAwesome } from "react-icons/md";
 import { CiPaperplane } from "react-icons/ci";
 import Placeholder from './Placeholder';
+import { downloadImage } from '../utils/downloadImage.js';
+import ImageLoadingOverlay from './ImageLoadingOverlay';
 
-const Editor = ({selectedImage,setSelectedImage,prompt, setPrompt,applyHandler}) => {
+const Editor = ({selectedImage,setSelectedImage,prompt, setPrompt,applyHandler,isWorking}) => {
 
-    // const [image,setImage]=useState('')    
+     
 
   return (
     <div className='flex flex-col gap-5 border border-gray-300 rounded-3xl bg-white p-2 px-5 md:px-7 shadow-sm'>
@@ -39,7 +39,7 @@ const Editor = ({selectedImage,setSelectedImage,prompt, setPrompt,applyHandler})
                     <TbFaceId className='text-lg text-gray-600'/>
                     <p className='text-md font-[350] text-gray-600'>Fix Face</p>
                 </button> 
-                <button className='featuresbtn'>
+                <button className='featuresbtn' onClick={()=>{downloadImage(selectedImage)}}>
                     <PiDownloadLight className='text-lg text-gray-600'/>
                     <p className='text-md font-[350] text-gray-600'>Download</p>
                 </button> 
@@ -47,14 +47,15 @@ const Editor = ({selectedImage,setSelectedImage,prompt, setPrompt,applyHandler})
         </div>
 
         {/* editor image main photo*/}
-        <div className='rounded-3xl overflow-hidden flex justify-center h-[70vh]'>
+        <div className='relative rounded-3xl overflow-hidden flex justify-center h-[70vh]'>
             <input type="file"  id='mainphoto' hidden onChange={(e)=>{setSelectedImage(e.target.files[0])}}/>
             {
                 selectedImage?<img src={selectedImage instanceof File ?URL.createObjectURL(selectedImage):selectedImage} alt=""  className='max-w-full
     max-h-full
     object-contain'/>:<label htmlFor="mainphoto" className='w-full h-full'><Placeholder/></label>
             }
-            
+            {isWorking && <ImageLoadingOverlay />}
+
             
             {/* <label htmlFor="mainphoto"><img className='w-full max-h-85 object-contain' src={placeholder} alt="" /></label> */}
         </div>

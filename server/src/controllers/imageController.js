@@ -7,78 +7,6 @@ import { FlyMyAI } from "flymyai-js-client";
 import FormData from "form-data";
 
 
-const editImage=async(req,res)=>{
-    try {
-        const {prompt,project}=req.body;
-        const image=req.file.buffer;
-
-        if(!prompt){
-            res.status(400).json({success:false,message:"prompt is required"});
-        }
-
-        //image check
-
-        // if not project create project
-        if(!project){
-            await projectModel.insertOne({userId:req.user,projectType:"Edit"})
-        }
-
-
-
-        const ai = new GoogleGenAI({});
-
-        const imagePath = "path/to/cat_image.png";
-        const imageData = fs.readFileSync(imagePath);
-        const base64Image = imageData.toString("base64");
-
-        const finalprompt = [
-            { text: prompt},
-            {
-                inlineData: {
-                    mimeType: "image/png",
-                    data: base64Image,
-                },
-            },
-        ];
-
-        const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash-image",
-            contents: finalprompt,
-        });
-        
-
-    } catch (error) {
-        console.log("error in editImage controller",error);
-        res.status(500).json({success:false,message:"editing image failed"})      
-    }
-};
-
-const generateImage=async(req,res)=>{
-    try {
-        const {prompt}=req.body;
-        
-        const ai=new GoogleGenAI({apiKey: process.env.GEMINI_API_KEY});
-
-        const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash-image",
-            contents: prompt,
-        });
-
-        console.log(response)
-
-        if(!response){
-            res.status(500).json({success:false,message:"error in genraing image"})
-        }
-
-        res.status(200).json({success:true,response,message:"image generated"})
-
-
-    } catch (error) {
-        console.log("error in generateImage controller",error);
-        res.status(500).json({success:false,message:"generating image failed"})     
-    }
-};
-
 const base64ToBuffer=(base64)=>{
     const buffer=Buffer.from(base64,"base64");
     return buffer;
@@ -157,20 +85,6 @@ const imageUrlToBase64=async(imageUrl)=>{
 //     return newImageUrl;
 // };
 
-// let config = {
-//   method: 'post',
-//   maxBodyLength: Infinity,
-//   url: 'https://api.flymy.ai/api/v1/flymyai/nano-banana/predict',
-//   headers: { 
-//     'x-api-key': 'fly-VBj3sAS9Hx7tBFgGURMOUD7hYKlVag2cF8P9ncleET_9pOlW_JZ7tF68oixSf271', 
-//     ...data.getHeaders()
-//   },
-//   data : data
-// };
-
-
-
-
 
 const generateImageCall=async(prompt)=>{
     //crate image and return the image url
@@ -206,8 +120,6 @@ const generateImageCall=async(prompt)=>{
         console.log("error in the generate image",error);
     }
 };
-
-
 
 const editImageCall=async(imageUrl,prompt)=>{
     try {
@@ -271,8 +183,6 @@ const editImageCall=async(imageUrl,prompt)=>{
  
 };
 
-
-
 const genImage=async(req,res)=>{
     try {
         const {prompt}=req.body;
@@ -283,7 +193,7 @@ const genImage=async(req,res)=>{
         const userId=req.user;
 
         if(!prompt){
-            return res.status(500).json({success:false,message:"prompt required"})     
+            return res.status(400).json({success:false,message:"prompt required"})     
         }
 
         let isNewProject=false;
@@ -313,7 +223,7 @@ const genImage=async(req,res)=>{
             createdImageUrl=await generateImageCall(prompt);
         }
 
-        const newImageObj=await imageModel.insertOne({projectId,prompt,imageUrl:createdImageUrl});
+        const newImageObj=await imageModel.insertOne({projectId,prompt,imageUrl:createdImageUrl,...(imageUrl && { parentImage: imageUrl })});
 
         const projectObjectGet=await projectModel.findById(projectId);
         projectObjectGet.editHistory.push(newImageObj._id);
@@ -337,4 +247,4 @@ const genImage=async(req,res)=>{
     }
 };
 
-export {editImage,generateImage,genImage}
+export {genImage}

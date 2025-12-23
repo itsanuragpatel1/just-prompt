@@ -9,5 +9,4 @@ const presetSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const presetModel =
-  mongoose.models.preset || mongoose.model("preset", presetSchema);
+export const presetModel = mongoose.models.preset || mongoose.model("preset", presetSchema);

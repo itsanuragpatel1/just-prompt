@@ -9,6 +9,7 @@ import Login from './pages/Login'
 import {Toaster} from 'react-hot-toast'
 import { ProtectedRoute } from './context/protectedRoute'
 import Profile from './pages/Profile'
+import Projects from './pages/Projects'
 
 const App = () => {
 
@@ -31,6 +32,7 @@ const App = () => {
                 <Route path='/presets' element={<Presets/>} />
                 <Route path='/gallary' element={<ProtectedRoute><Gallary/></ProtectedRoute>} />
                 <Route path='/profile' element={<ProtectedRoute><Profile/></ProtectedRoute>}/>
+                <Route path='/projects' element={<ProtectedRoute><Projects/></ProtectedRoute>}  />
               </Routes>
        </div>
     </div>

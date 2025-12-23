@@ -22,7 +22,7 @@ const Login = ({setShowLogin}) => {
         }
         setLoading(true);
         try {    
-            const endpoint=`${import.meta.env.VITE_BACKEND_URL}/api/auth/${state=='Login'?'login':'end-otp'}`;
+            const endpoint=`${import.meta.env.VITE_BACKEND_URL}/api/auth/${state=='Login'?'login':'send-otp'}`;
 
             // const {data}=await axios.post(endpoint,{fullName,email,password},{withCredentials:true});
             if(state=='Login'){
@@ -60,7 +60,7 @@ const Login = ({setShowLogin}) => {
         setLoading(true);
         try {
             console.log(email,fullName,password);
-            const endpoint=`${import.meta.env.VITE_BACKEND_URL}/api/auth/verfiy-otp`;
+            const endpoint=`${import.meta.env.VITE_BACKEND_URL}/api/auth/verify-otp`;
 
             const {data}=await axios.post(endpoint,{fullName,email,password,otp},{withCredentials:true});
 
@@ -95,7 +95,7 @@ const Login = ({setShowLogin}) => {
         <form action="" className='flex flex-col gap-2 items-center bg-white w-sm max-w-xl rounded-xl py-6 px-5  mx-2 z-100 shadow-xl' onClick={(e)=>e.stopPropagation()} onSubmit={(e)=>{verifyOtp(e)}}>
             <h1 className='text-2xl mb-3'>Verify your E-mail</h1>
             <h4 className='text-center text-gray-700 mb-4'>Enter code we've sent to your email <br /> {email||"test@gmail.com"} </h4>
-            <input type="text" minLength={5} maxLength={5}  value={otp} onChange={(e)=>setOtp(e.target.value)} name='otp' className='border  rounded-xl h-13  tracking-[45px] max-w-full text-4xl py-3 text-center pl-[20px]' autoFocus />
+            <input type="text" minLength={6} maxLength={6}  value={otp} onChange={(e)=>setOtp(e.target.value)} name='otp' className='border  rounded-xl h-13  tracking-[45px] max-w-full text-4xl py-3 text-center pl-[20px]' autoFocus />
             <h4 className='text-gray-700 m-2'>Didn't get the code ? <button className='underline text-black cursor-pointer'> resend it </button> </h4>
             <button type='submit' className='bg-black text-white rounded-lg h-11 py-2 mt-4 cursor-pointer w-full'>{loading?'Verifying...':'Submit'} </button>
         </form>
