@@ -107,21 +107,14 @@ const getAllImages = async (req, res) => {
 
     // Get all images
     const images = await imageModel
-      .find({ projectId: { $in: projectIds } })
+      .find({ projectId: { $in: projectIds } , type: { $ne: "Upload" } })
       .sort({ createdAt: -1 });
 
-    return res.status(200).json({
-      success: true,
-      count: images.length,
-      images
-    });
+    return res.status(200).json({success: true,count: images.length,images});
 
   } catch (error) {
     console.error("getAllUserImages error:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Failed to fetch images"
-    });
+    return res.status(500).json({success: false,message: "Failed to fetch images"});
   }
 };
 
@@ -132,24 +125,17 @@ const getGeneratedImages = async (req, res) => {
 
     // Get user's projects
     const projects = await projectModel
-      .find({ userId })
+      .find({ userId , projectType: "Generate" })
       .select("_id");
 
     const projectIds = projects.map(p => p._id);
 
     // Only generated images
     const images = await imageModel
-      .find({
-        projectId: { $in: projectIds },
-        type: "Generate"
-      })
+      .find({projectId: { $in: projectIds }})
       .sort({ createdAt: -1 });
 
-    return res.status(200).json({
-      success: true,
-      count: images.length,
-      images
-    });
+    return res.status(200).json({success: true,count: images.length,images});
 
   } catch (error) {
     console.error("getGeneratedImages error:", error);
@@ -167,24 +153,17 @@ const getEditedImages = async (req, res) => {
 
     // Get user's projects
     const projects = await projectModel
-      .find({ userId })
+      .find({ userId, projectType:"Edit" })
       .select("_id");
 
     const projectIds = projects.map(p => p._id);
 
     // Edited images based on image.type
     const images = await imageModel
-      .find({
-        projectId: { $in: projectIds },
-        type: { $in: ["Edit", "Preset"] }
-      })
+      .find({ projectId: { $in: projectIds }, type: { $ne: "Upload" } })
       .sort({ createdAt: -1 });
 
-    return res.status(200).json({
-      success: true,
-      count: images.length,
-      images
-    });
+    return res.status(200).json({success: true,count: images.length,images});
 
   } catch (error) {
     console.error("getEditedImages error:", error);

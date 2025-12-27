@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { BsArrowRepeat } from "react-icons/bs";
 import { LuImageUpscale } from "react-icons/lu";
 import { MdLabel, MdOutlineAutoFixHigh } from "react-icons/md";
@@ -8,11 +8,10 @@ import { MdAutoAwesome } from "react-icons/md";
 import { CiPaperplane } from "react-icons/ci";
 import Placeholder from './Placeholder';
 import { downloadImage } from '../utils/downloadImage.js';
-import ImageLoadingOverlay from './ImageLoadingOverlay';
+import ImageLoadingOverlay from './ImageLoadingOverlay.jsx';
 
-const Editor = ({selectedImage,setSelectedImage,prompt, setPrompt,applyHandler,isWorking}) => {
+const Editor = ({selectedImage,setSelectedImage,prompt, setPrompt,applyHandler,isWorking,reRunHandler,fixFaceHandler}) => {
 
-     
 
   return (
     <div className='flex flex-col gap-5 border border-gray-300 rounded-3xl bg-white p-2 px-5 md:px-7 shadow-sm'>
@@ -20,22 +19,22 @@ const Editor = ({selectedImage,setSelectedImage,prompt, setPrompt,applyHandler,i
         {/* editor nav functionalites */}
         <div className='flex justify-between gap-3 flex-col sm:flex-row'>
             <div className='flex gap-3'>
-                <button className='featuresbtn'>
+                <button className='featuresbtn' onClick={()=>{reRunHandler()}}>
                     <BsArrowRepeat className='text-lg text-gray-600'/>
                     <p className='text-md font-[350] text-gray-600'>Re-Run</p>
                 </button>
-                <button className='featuresbtn'>
+                <button className='featuresbtn' onClick={()=>{applyHandler("auto")}}>
                     <MdOutlineAutoFixHigh className='text-lg text-gray-600'/>
                     <p className='text-md font-[350] text-gray-600'>Auto</p>
                 </button>
-                <button className='featuresbtn'>
+                <button className='featuresbtn' onClick={()=>{applyHandler("upscale")}}>
                     <LuImageUpscale className='text-lg text-gray-600'/>
                     <p className='text-md font-[350] text-gray-600'>Upscale</p>
                 </button>                
                 
             </div>
             <div className='flex gap-3'>
-                <button className='featuresbtn'>
+                <button className='featuresbtn' onClick={()=>{fixFaceHandler()}}>
                     <TbFaceId className='text-lg text-gray-600'/>
                     <p className='text-md font-[350] text-gray-600'>Fix Face</p>
                 </button> 

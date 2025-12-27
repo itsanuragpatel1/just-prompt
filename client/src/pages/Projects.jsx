@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import LoaderComp from "../components/LoaderComp";
 
 const Projects = () => {
   const filters = ["All", "Edit", "Generated"];
@@ -83,7 +84,7 @@ const Projects = () => {
       {/* Content */}
       <div className="p-6">
         {loading ? (
-          <p className="text-center text-gray-500">Loading projects...</p>
+          <LoaderComp/>
         ) : projects.length === 0 ? (
           <p className="text-center text-gray-400">
             No projects found

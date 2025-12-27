@@ -13,6 +13,8 @@ import { CiLock } from "react-icons/ci"; //lock
 import { LuShieldCheck } from "react-icons/lu"; //shield
 import { CiCircleCheck } from "react-icons/ci"; //check
 import StatCard from '../components/StatCard.jsx';
+import { useAuth } from '../context/AuthContext.jsx';
+import LoaderComp from '../components/LoaderComp.jsx';
 
 const InputField = ({ label, type = "text", value, placeholder, onChange }) => {
     return <div className="mb-5">
@@ -39,13 +41,17 @@ const InputField = ({ label, type = "text", value, placeholder, onChange }) => {
 const Profile = () => {
 
     const [loading, setLoading] = useState(true);
-    const [user, setUser] = useState(null);
+    const [userFull, setUserFull] = useState(null);
     const [activeTab, setActiveTab] = useState('profile');
     const [oldPassword,setOldPassword]=useState('');
     const [newPassword,setNewPassword]=useState('');
     const [confirmPassword,setConfirmPassword]=useState('');
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
+    const [isWorking,setIsWorking]=useState(false);
+    const [refreshProfile, setRefreshProfile] = useState(false);
+
+    const {setUser}=useAuth();
 
 
     useEffect(() => {
@@ -55,9 +61,9 @@ const Profile = () => {
                 const { data } = await axios.get(endpoint, { withCredentials: true });
 
                 if (data.success) {
-                    setUser(data.userObj);
+                    setUserFull(data.userObj);
                     setFirstName(data.userObj.fullName.split(' ').at(0))
-                    setLastName(data.userObj.fullName.split(' ').at(-1))
+                    setLastName(data.userObj.fullName.slice(data.userObj.fullName.indexOf(" ")+1,))
                 } else {
                     toast.error(data.message);
                 }
@@ -71,35 +77,49 @@ const Profile = () => {
 
         getProfile();
 
-    }, [])
+    }, [refreshProfile])
 
-    const onCameraClick = async () => {
+    const onCameraClick = async (image) => {
+        if(!image){
+            return;
+        } 
+
         try {
             const endpoint=`${import.meta.env.VITE_BACKEND_URL}/api/auth/update-avatar`;
        
-            const {data}=await axios.post(endpoint,{},{withCredentials:true});
+            const form=new FormData();
+            form.append("image",image);
+            const {data}=await axios.post(endpoint,form,{withCredentials:true});
 
             if(data.success){
                 toast.success(data.message);
+                setUser(data.user);
+                setRefreshProfile(prev => !prev);
             }else{
                 toast.error(data.message);
             }
 
         } catch (error) {
-            console.log("error in update avatar",error);
-            
+            console.log("error in update avatar",error);      
         }
 
     };
 
 
     const updatePasswordHandler=async()=>{
-        if(oldPassword!==newPassword){
-            return toast.error("New passwords do not match");
+        if(isWorking){
+            return ;
         }
 
+        if(newPassword!==confirmPassword){
+            return toast.error("New and cofirm password should same");
+        }
+        
+        setIsWorking(true);
+
         try {
-            const endpoint=`${import.meta.env.VITE_BACKEND_URL}/api/auth/change-password`;
+            
+            const endpoint=`${import.meta.env.VITE_BACKEND_URL}/api/auth/update-password`;
 
             const {data}=await axios.post(endpoint,{oldPassword,newPassword},{withCredentials:true});
 
@@ -115,10 +135,17 @@ const Profile = () => {
         } catch (error) {
             console.log("error in changePasswordHandler",error);
             toast.error("Failed to update password");
+        } finally{
+            setIsWorking(false);
         }
     }
 
     const updateProfile=async()=>{
+        if(isWorking){
+            return ;
+        }
+        setIsWorking(true);
+
         try {
             const endpoint=`${import.meta.env.VITE_BACKEND_URL}/api/auth/update-profile`;
        
@@ -126,6 +153,8 @@ const Profile = () => {
 
             if(data.success){
                 toast.success(data.message);
+                setUser(data.user);
+                setRefreshProfile(prev => !prev);
             }else{
                 toast.error(data.message);
             }
@@ -133,10 +162,14 @@ const Profile = () => {
         } catch (error) {
             console.log("error in update profile",error);
             
+        } finally{
+            setIsWorking(false)
         }
     }
 
-    if (loading) return <div className="p-6">Loading...</div>;
+
+
+    if (loading) return <LoaderComp/>;
 
     return (
 
@@ -146,9 +179,9 @@ const Profile = () => {
                 <div className="relative">
                     {/* Profile Image / Default Icon */}
                     <div className="w-28 h-28 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
-                        {user?.avatar ? (
+                        {userFull?.avatar ? (
                             <img
-                                src={user.avatar}
+                                src={userFull.avatar}
                                 alt="profile"
                                 className="w-full h-full object-cover"
                             />
@@ -158,24 +191,25 @@ const Profile = () => {
                     </div>
 
                     {/* Camera Icon */}
-                    <button
-                        onClick={onCameraClick}
-                        className="absolute bottom-1 right-1 bg-blue-600 text-white p-1 rounded-full hover:bg-blue-700 transition"
+                    <input type="file" hidden id='profile' onChange={(e)=>{onCameraClick(e.target.files[0])}}/>
+                    <label
+                        htmlFor='profile'
+                        className="absolute bottom-1 right-1 bg-blue-600 text-white p-1 rounded-full hover:bg-blue-700 transition cursor-pointer"
                     >
                         <IoCameraOutline className="text-lg" />
-                    </button>
+                    </label>
                 </div>
 
                 {/* User Info */}
-                <h2 className="text-xl font-semibold text-gray-900">{user?.fullName || ''}</h2>
-                <p className="text-gray-600 text-sm">{user?.email || ''}</p>
+                <h2 className="text-xl font-semibold text-gray-900">{userFull?.fullName || ''}</h2>
+                <p className="text-gray-600 text-sm">{userFull?.email || ''}</p>
             </div>
 
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <StatCard
                     label="Total Projects"
-                    value={user.projectsCount}
+                    value={userFull.projectsCount}
                     subtext=""
                     icon={GoProject}
                     color="yellow"
@@ -183,7 +217,7 @@ const Profile = () => {
 
                 <StatCard
                     label="Images Generated"
-                    value={user.imagesCount}
+                    value={userFull.imagesCount}
                     subtext=""
                     icon={CiImageOn}
                     color="purple"
@@ -191,7 +225,7 @@ const Profile = () => {
 
                 <StatCard
                     label="Current Plan"
-                    value={user.plan}
+                    value={userFull.plan}
                     subtext=""
                     icon={IoSettingsOutline}
                     color="blue"
@@ -211,7 +245,7 @@ const Profile = () => {
                         <AiFillStar size={28} className="text-yellow-400 fill-yellow-400 drop-shadow-lg" />
                     </div>
                     <div>
-                        <h3 className="text-xl font-bold text-white tracking-tight">Upgrade to Business</h3>
+                        <h3 className="text-xl font-bold text-white tracking-tight">Upgrade to Pro</h3>
                         <p className="text-blue-100/80 text-sm mt-1 font-medium">Get 10,000 credits, priority support & 4K upscaling.</p>
                     </div>
                 </div>
@@ -259,7 +293,7 @@ const Profile = () => {
                                 <InputField key="last" label="Last Name" value={lastName} onChange={(e)=>{setLastName(e.target.value)}} />
                             </div>
 
-                            <InputField key="email" label="Email Address" type="email" value={user.email} />
+                            <InputField key="email" label="Email Address" type="email" value={userFull.email} />
 
                             {/* <div>
                           <div className="flex justify-between items-center mb-2">
@@ -275,7 +309,7 @@ const Profile = () => {
                         </div> */}
 
                             <div className="pt-4 flex justify-end">
-                                <button className="flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-xl text-sm font-bold hover:bg-gray-800 transition-all shadow-lg shadow-gray-200 active:scale-95">
+                                <button onClick={()=>{updateProfile()}} className="flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-xl text-sm font-bold hover:bg-gray-800 transition-all shadow-lg shadow-gray-200 active:scale-95">
                                     <FaRegSave size={16} />
                                     Save Changes
                                 </button>
@@ -323,7 +357,7 @@ const Profile = () => {
 
                                 <div className="flex justify-end pt-2">
                                     <button  onClick={updatePasswordHandler} className="px-6 py-3 bg-white border border-gray-200 text-gray-700 rounded-xl text-sm font-bold hover:bg-gray-50 transition-all active:scale-95">
-                                        Update Password
+                                        {isWorking?'Updating ...':'Update Password'}
                                     </button>
                                 </div>
                             </div>

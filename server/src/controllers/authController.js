@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken'
 import { otpModel } from "../models/otpModel.js";
 import { sendOtpMail } from "../utils/sendEmail.js";
 import axios from 'axios'
+import { uploadImage } from "../utils/cloudinary.js";
 
 const generateAccessToken=async(userId)=>{
     const accessToken=await jwt.sign({userId},process.env.JWT_SECRET,{expiresIn:process.env.JWT_ACCESS_EXPIRY});
@@ -290,5 +291,121 @@ const googleCallBack=async(req,res)=>{
     }
 }
 
+const updatePassword = async (req, res) => {
+  try {
+    const userId = req.user;
+    const { oldPassword, newPassword } = req.body;
 
-export {signup,login,logout,sendOtp,verifyOtp,googleLogin,googleCallBack}
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({success: false,message: "Old password and new password are required"});
+    }
+
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({success: false,message: "User not found"});
+    }
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      return res.status(401).json({success: false,message: "Old password is incorrect"});
+    }
+
+    const isSame = await bcrypt.compare(newPassword, user.password);
+    if (isSame) {
+      return res.status(400).json({success: false,message: "New password must be different from old password"});
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 7);
+
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({success: true,message: "Password updated successfully"});
+
+  } catch (error) {
+    console.error("Update Password Error:", error);
+    res.status(500).json({success: false,message: "Server error"});
+  }
+};
+
+const updateProfile = async (req, res) => {
+  try {
+    const userId = req.user;
+    const { firstName, lastName } = req.body;
+
+    if (!firstName || !lastName) {
+      return res.status(400).json({
+        success: false,
+        message: "First name and last name are required"
+      });
+    }
+
+    const fullName = `${firstName.trim()} ${lastName.trim()}`;
+
+    const updatedUser = await userModel.findByIdAndUpdate(
+      userId,
+      { fullName },
+      { new: true }
+    ).select("-password -refreshToken");
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      user: updatedUser
+    });
+
+  } catch (error) {
+    console.error("updateProfile error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to update profile"
+    });
+  }
+};
+
+
+const updateAvatar = async (req, res) => {
+  try {
+    const userId = req.user;
+
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "image is required"
+      });
+    }
+
+    const image = req.file.buffer;
+
+    const uploadResult = await uploadImage(image);
+
+    if (!uploadResult?.secure_url) {
+      return res.status(500).json({
+        success: false,
+        message: "Image upload failed"
+      });
+    }
+
+    const user = await userModel.findByIdAndUpdate(
+      userId,
+      { avatar: uploadResult.secure_url },
+      { new: true }
+    ).select("-password -refreshToken");
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile picture updated successfully",
+      user
+    });
+
+  } catch (error) {
+    console.error("updateAvatar error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to update profile picture"
+    });
+  }
+};
+
+
+export {signup,login,logout,sendOtp,verifyOtp,googleLogin,googleCallBack,updatePassword,updateProfile,updateAvatar};

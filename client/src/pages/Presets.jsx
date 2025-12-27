@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import LoaderComp from '../components/LoaderComp.jsx';
 
 const Presets = () => {
   const [presets, setPresets] = useState([]);
@@ -66,7 +67,7 @@ const Presets = () => {
       />
 
       {loading ? (
-        <div className="text-center py-8 text-gray-500">Loading presets...</div>
+        <LoaderComp/>
       ) : error ? (
         <div className="text-center py-8 text-red-500">{error}</div>
       ) : (

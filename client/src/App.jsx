@@ -24,7 +24,7 @@ const App = () => {
 
     <div className='lg:flex'>
        <Sidebar  onCross={()=>{setSidebarOpen(false)}} sidebarOpen={sidebarOpen} />
-       <div className='flex-1'>
+       <div className='flex-1 '>
             <Navbar onMenu={()=>{setSidebarOpen(true)}} sidebarOpen={sidebarOpen} setShowLogin={setShowLogin}/>      
              <Routes>
                 <Route path='/' element={<Home/>} />

@@ -3,6 +3,7 @@ import { FaRegPenToSquare } from "react-icons/fa6";
 import { PiDownloadLight } from "react-icons/pi";
 import axios from "axios";
 import { downloadImage } from "../utils/downloadImage.js";
+import LoaderComp from "../components/LoaderComp.jsx";
 
 const Gallery = () => {
   const filters = ["All", "Edited", "Generated"];
@@ -84,7 +85,7 @@ const Gallery = () => {
       {/* Content */}
       <div className="p-4">
         {loading ? (
-          <p className="text-center text-gray-500">Loading images...</p>
+          <LoaderComp/>
         ) : images.length === 0 ? (
           <p className="text-center text-gray-400">
             No images found
