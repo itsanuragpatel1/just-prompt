@@ -9,9 +9,12 @@ import { CiPaperplane } from "react-icons/ci";
 import Placeholder from './Placeholder';
 import { downloadImage } from '../utils/downloadImage.js';
 import ImageLoadingOverlay from './ImageLoadingOverlay.jsx';
+import { useAuth } from '../context/AuthContext.jsx';
+import toast from 'react-hot-toast';
 
 const Editor = ({selectedImage,setSelectedImage,prompt, setPrompt,applyHandler,isWorking,reRunHandler,fixFaceHandler}) => {
 
+    const {user}=useAuth();
 
   return (
     <div className='flex flex-col gap-5 border border-gray-300 rounded-3xl bg-white p-2 px-5 md:px-7 shadow-sm'>
@@ -63,7 +66,7 @@ const Editor = ({selectedImage,setSelectedImage,prompt, setPrompt,applyHandler,i
         <div className='rounded-3xl border border-gray-300 flex items-center py-2 px-3 sm:px-5'>
             <MdAutoAwesome className='text-lg text-gray-600 hidden sm:block'/>
             <input type="text" className='flex-1 sm:px-3 text-lg text-gray-700 outline-0'  placeholder="Generate or edit — eg. 'create mountain view' or 'make it aesthetic" value={prompt} onChange={(e)=>{setPrompt(e.target.value)}} />
-            <button onClick={()=>{applyHandler()}} className='flex items-center gap-2 rounded-3xl px-4 py-2 bg-blue-700 hover:bg-blue-800' >
+            <button onClick={()=>{user?applyHandler():toast.error("Please Login to Continue")}} className='flex items-center gap-2 rounded-3xl px-4 py-2 bg-blue-700 hover:bg-blue-800' >
                 <p className='text-md font-[350] text-white hidden sm:block'>Apply</p>
                 <CiPaperplane className='text-lg text-white'/>
             </button>

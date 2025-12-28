@@ -22,9 +22,9 @@ const App = () => {
 
     {showLogin && <Login setShowLogin={setShowLogin}/>}
 
-    <div className='lg:flex'>
+    <div className='lg:flex h-screen'>
        <Sidebar  onCross={()=>{setSidebarOpen(false)}} sidebarOpen={sidebarOpen} />
-       <div className='flex-1 '>
+       <div className='flex-1 overflow-y-auto'>
             <Navbar onMenu={()=>{setSidebarOpen(true)}} sidebarOpen={sidebarOpen} setShowLogin={setShowLogin}/>      
              <Routes>
                 <Route path='/' element={<Home/>} />

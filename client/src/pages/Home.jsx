@@ -10,6 +10,7 @@ import { useLocation } from 'react-router-dom';
 import { useRef } from 'react';
 import { autoPrompt } from '../assets/autoPrompt.js'
 import LoaderComp from '../components/LoaderComp.jsx'
+import { useAuth } from '../context/AuthContext'
 
 const Home = () => {
 
@@ -21,6 +22,7 @@ const Home = () => {
   const [prompt, setPrompt] = useState('');
   const location = useLocation();
   const isPresetFlowRef = useRef(false);
+  const {user}=useAuth();
 
 
   const navigate = useNavigate();
@@ -81,6 +83,11 @@ const Home = () => {
     //project not present or present
     //editing or generating
     //project handle (creation) should be in backend 
+    if(!user){
+      toast.error("Please Login to Continue");
+      return ;
+    }
+
     if (isWorking) {
       return;
     }
@@ -151,6 +158,11 @@ const Home = () => {
   }
 
   const reRunHandler = async () => {
+    if(!user){
+      toast.error("Please Login to Continue");
+      return ;
+    }
+
     if (isWorking) {
       toast.error("Already processing. Please wait.");
       return;
@@ -198,6 +210,11 @@ const Home = () => {
   };
 
   const fixFaceHandler=async()=>{
+
+    if(!user){
+      toast.error("Please Login to Continue");
+      return ;
+    }
     
     if(isWorking){
       toast.error("Already processing. Please wait.");

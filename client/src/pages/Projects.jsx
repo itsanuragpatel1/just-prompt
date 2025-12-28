@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import LoaderComp from "../components/LoaderComp";
+import LoaderComp from "../components/LoaderComp.jsx";
 
 const Projects = () => {
   const filters = ["All", "Edit", "Generated"];
@@ -12,7 +12,6 @@ const Projects = () => {
 
   const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-  // 🔹 Map filter → API
   const getEndpoint = (filter) => {
     switch (filter) {
       case "Edit":

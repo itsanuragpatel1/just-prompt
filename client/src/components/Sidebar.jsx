@@ -1,104 +1,194 @@
+import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import React, { useContext } from 'react'
-import { RxCross2 } from "react-icons/rx";
-import { useNavigate } from 'react-router-dom';
-import defProfile from '../assets/profile.png'
+import { useNavigate, useLocation } from 'react-router-dom';
+import defProfile from '../assets/profile.png';
+import { RxCross2, RxDashboard, RxRocket, RxImage, RxMagicWand, RxPlus } from "react-icons/rx";
+import { FiLayers } from "react-icons/fi";
+import toast from 'react-hot-toast';
 
-const Sidebar = ({sidebarOpen , onCross}) => {
+const Sidebar = ({ sidebarOpen, onCross }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { user } = useAuth();
 
-  const navigate=useNavigate();
+  // Helper for consistent menu styling
+  const MenuLink = ({ label, path, icon: Icon, onClick }) => {
+    const isActive = location.pathname === path;
+    return (
+      <button
+        onClick={onClick}
+        className={`
+          relative w-full text-left px-4 py-3 text-sm transition-all duration-200 rounded-xl group cursor-pointer flex items-center gap-3
+          ${isActive 
+            ? 'font-bold text-gray-900 bg-white shadow-sm border border-gray-100' 
+            : 'font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-100/50'
+          }
+        `}
+      >
+        {/* Icon wrapper */}
+        <span className={`text-lg ${isActive ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'}`}>
+          <Icon />
+        </span>
+        
+        {label}
+      </button>
+    );
+  };
 
-  const {user}=useAuth();
-
-  //user.plan
-  //user.avatar
-  //user.fullName
-  //user.email
-
-const SidebarProfile = () => {
-
-  return (
-    <div
-      onClick={() => navigate("/profile")}
-      className="
-        flex items-center gap-3 
-        p-3 rounded-xl cursor-pointer
-        hover:bg-gray-100 transition
-      "
-    >
-      {/* Avatar */}
-      <img
-        src={user?.avatar || defProfile  }
-        alt="avatar"
-        className="w-10 h-10 rounded-full object-cover"
-      />
-
-      {/* Info */}
-      <div className="min-w-0 leading-tight">
-        <p className="text-sm font-medium text-gray-900 truncate">
-          {user?.fullName || "User Name"}
-        </p>
-
-        <p className="text-xs text-gray-500 truncate">
-          {user?.email || "user@email.com"}
-          <span className="mx-1">•</span>
-          <span className="capitalize">
-            {user?.plan || "free"}
-          </span>
-        </p>
+  const SidebarProfile = () => {
+    return (
+      <div
+        onClick={() => navigate("/profile")}
+        className="
+          flex items-center gap-3 
+          p-2 rounded-2xl cursor-pointer
+          hover:bg-gray-100 transition-all duration-300
+          border border-transparent hover:border-gray-200
+        "
+      >
+        <img
+          src={user?.avatar || defProfile}
+          alt="avatar"
+          className="w-9 h-9 rounded-full object-cover border border-gray-200"
+        />
+        <div className="min-w-0 leading-tight">
+          <p className="text-sm font-bold text-gray-800 truncate">
+            {user?.fullName || "User Name"}
+          </p>
+          <p className="text-xs text-gray-400 truncate">
+            {user?.email || "user@email.com"}
+          </p>
+        </div>
       </div>
+    );
+  };
+
+  // A widget to fill space and look professional
+  const UsageWidget = () => (
+    <div className="mx-1 mb-6 p-4 rounded-2xl bg-gradient-to-br from-[#394855] to-gray-800 text-white relative overflow-hidden shadow-lg">
+      {/* Decorative circle */}
+      <div className="absolute -top-6 -right-6 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
+      
+      <p className="text-xs font-medium text-gray-300 mb-1">Monthly Credits</p>
+      <div className="flex items-end gap-1 mb-2">
+        <span className="text-2xl font-bold">12</span>
+        <span className="text-sm text-gray-400 mb-1">/ 20 used</span>
+      </div>
+      
+      {/* Progress Bar */}
+      <div className="w-full h-1.5 bg-gray-600 rounded-full overflow-hidden mb-3">
+        <div className="h-full bg-blue-400 w-[60%] rounded-full"></div>
+      </div>
+
+      <button 
+        onClick={() => navigate('/pricing')}
+        className="w-full py-2 text-xs font-bold bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition-colors"
+      >
+        Upgrade Plan
+      </button>
     </div>
   );
-};
 
-return (
+  return (
     <>
+      {/* Mobile Overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          className="fixed inset-0 bg-gray-900/20 backdrop-blur-sm z-40 lg:hidden"
           onClick={onCross}
         ></div>
       )}
 
-      <div className={`${sidebarOpen ? 'absolute' : 'hidden'} bg-white lg:static lg:block z-50 duration-300`}>
-        {/* 🔹 ONLY CHANGE: flex + h-full */}
-        <div className="flex flex-col w-xs p-4 lg:border-r border-gray-300 h-[100vh]">
+      {/* Main Sidebar */}
+      <div className={`
+          fixed inset-y-0 left-0 z-50 bg-[#F8FAFC] 
+          lg:static lg:block
+          w-[270px]
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+          transition-transform duration-300 ease-out
+          border-r border-gray-200 lg:shadow-none shadow-2xl
+        `}>
 
-          {/* Existing content (UNCHANGED) */}
-          <div>
-            <div className='flex items-center gap-2'>
-              <RxCross2 className='text-2xl cursor-pointer lg:hidden' onClick={onCross} />
-              <h2 className='text-xl'>Just Prompt</h2>
-            </div>
+        <div className="flex flex-col h-full px-5 py-6">
 
-            <div className='flex flex-col mt-8 gap-3'>
-              <button
-                onClick={() => navigate('/')}
-                className='rounded-3xl bg-blue-600 text-white p-2 text-lg hover:bg-blue-700'
-              >
-                Upload Photo
-              </button>
-              <button
-                onClick={() => navigate('/')}
-                className='rounded-3xl bg-gray-200 text-black p-2 text-lg hover:bg-gray-300'
-              >
-                Generate Photo
-              </button>
-            </div>
-
-            <div className='flex flex-col mt-6 gap-2'>
-              <p>MENU</p>
-              <button className='menubtn' onClick={() => { navigate('/'); onCross(); }}>Editor</button>
-              <button className='menubtn' onClick={() => { navigate('/presets'); onCross(); }}>Trending Presets</button>
-              <button className='menubtn' onClick={() => { navigate('/gallary'); onCross(); }}>My Gallary</button>
-              <button className='menubtn' onClick={() => { navigate('/projects'); onCross(); }}>Projects</button>
-            </div>
+          {/* Logo Section */}
+          <div className='flex items-center justify-between mb-8 pl-1'>
+            <h2 className='text-xl font-black tracking-tight text-gray-900 flex items-center gap-2'>
+              <img src='/logo.png' alt="" className='h-7 w-7' />
+              Just Prompt
+            </h2>
+            <RxCross2 
+              className='text-2xl text-gray-400 hover:text-black transition-colors cursor-pointer lg:hidden' 
+              onClick={onCross} 
+            />
           </div>
 
-          {/* 🔹 PROFILE AT BOTTOM (NEW) */}
-          <div className="mt-auto" onClick={()=>{navigate('/profile')}}>
-            <SidebarProfile/>
+          {/* Primary Action Button */}
+          <button
+            onClick={() => navigate('/')}
+            className='
+              w-full py-3.5 px-4 mb-8 rounded-xl
+              bg-blue-600 text-white text-sm font-semibold tracking-wide
+              hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-200
+              active:scale-[0.98]
+              transition-all duration-200
+              flex items-center justify-center gap-2
+              group
+            '
+          >
+            <RxPlus className="text-xl group-hover:rotate-90 transition-transform duration-300"/>
+            Start New Project
+          </button>
+
+          {/* Navigation */}
+          <div className='flex-1 flex flex-col gap-1.5 overflow-y-auto'>
+            <p className='px-4 mb-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest'>
+              Menu
+            </p>
+            
+            <MenuLink 
+              label="Editor" 
+              path="/" 
+              icon={RxMagicWand} 
+              onClick={() => { navigate('/'); onCross(); }} 
+            />
+            <MenuLink 
+              label="My Gallery" 
+              path="/gallary" 
+              icon={RxImage} 
+              onClick={() => { user? (navigate('/gallary'),onCross()):toast.error("Please Login to Continue") }} 
+            />
+             <MenuLink 
+              label="Projects" 
+              path="/projects" 
+              icon={FiLayers} 
+              onClick={() => { user? (navigate('/projects'),onCross()): toast.error("Please Login to Continue") }} 
+            />
+            
+            <div className="my-2 border-b border-gray-100"></div>
+
+            <p className='px-4 mb-2 mt-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest'>
+              Discover
+            </p>
+            <MenuLink 
+              label="Trending Presets" 
+              path="/presets" 
+              icon={RxDashboard} 
+              onClick={() => { navigate('/presets'); onCross(); }} 
+            />
           </div>
+
+          {/* Bottom Section: Usage Widget + Profile */}
+          {user && 
+          <div className="mt-auto">
+            {/* The widget fills the visual gap left by removing the big buttons */}
+            <UsageWidget />
+            
+            <div className="pt-2 border-t border-gray-200/60">
+              <SidebarProfile />
+            </div>
+          </div>
+          }
 
         </div>
       </div>
@@ -106,4 +196,4 @@ return (
   );
 }
 
-export default Sidebar
+export default Sidebar;

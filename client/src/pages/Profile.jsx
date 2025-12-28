@@ -50,6 +50,7 @@ const Profile = () => {
     const [lastName, setLastName] = useState("");
     const [isWorking,setIsWorking]=useState(false);
     const [refreshProfile, setRefreshProfile] = useState(false);
+    const [profileUpdating,setProfileUpdating]=useState(false);
 
     const {setUser}=useAuth();
 
@@ -80,9 +81,11 @@ const Profile = () => {
     }, [refreshProfile])
 
     const onCameraClick = async (image) => {
-        if(!image){
+        if(!image || profileUpdating){
             return;
-        } 
+        }
+
+        setProfileUpdating(true);
 
         try {
             const endpoint=`${import.meta.env.VITE_BACKEND_URL}/api/auth/update-avatar`;
@@ -101,6 +104,8 @@ const Profile = () => {
 
         } catch (error) {
             console.log("error in update avatar",error);      
+        } finally {
+            setProfileUpdating(false);
         }
 
     };
@@ -179,7 +184,7 @@ const Profile = () => {
                 <div className="relative">
                     {/* Profile Image / Default Icon */}
                     <div className="w-28 h-28 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
-                        {userFull?.avatar ? (
+                        {profileUpdating?<img src="/loading.gif" alt="" />:userFull?.avatar ? (
                             <img
                                 src={userFull.avatar}
                                 alt="profile"
@@ -264,7 +269,7 @@ const Profile = () => {
                 <div className="flex border-b border-gray-100">
                     <button
                         onClick={() => setActiveTab('profile')}
-                        className={`flex-1 py-4 text-sm font-bold text-center transition-all border-b-2 
+                        className={`flex-1 py-4 text-sm cursor-pointer font-bold text-center transition-all border-b-2 
                       ${activeTab === 'profile'
                                 ? 'border-blue-600 text-blue-600 bg-blue-50/30'
                                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
@@ -274,7 +279,7 @@ const Profile = () => {
                     </button>
                     <button
                         onClick={() => setActiveTab('security')}
-                        className={`flex-1 py-4 text-sm font-bold text-center transition-all border-b-2 
+                        className={`flex-1 py-4 text-sm cursor-pointer font-bold text-center transition-all border-b-2 
                       ${activeTab === 'security'
                                 ? 'border-blue-600 text-blue-600 bg-blue-50/30'
                                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'

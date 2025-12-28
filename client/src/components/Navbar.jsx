@@ -45,12 +45,12 @@ const Navbar = ({onMenu,setShowLogin}) => {
 
 
   return (
-    <div className='flex justify-between p-4 border-gray-300 border-b '>
+    <div className='flex justify-between p-4 py-4 border-gray-300 border-b '>
         <div className='flex items-center gap-2'>
             <IoMenu  onClick={onMenu} className='text-2xl cursor-pointer lg:hidden' />
             <h2 className='text-xl lg:hidden'>Just Prompt</h2>
             {location1.pathname=='/'? <FaRegPenToSquare className='text-xl hidden lg:block' /> : (location1.pathname=='/presets'?  <VscFlame className='text-xl hidden lg:block' />:  <IoMdImages className='text-xl hidden lg:block' /> )}
-            <h2 className='text-xl hidden lg:block'>{location1.pathname.startsWith('/project')?'Editor':pageTitles[location1.pathname]}</h2>
+            <h2 className='text-xl hidden lg:block'>{location1.pathname.startsWith('/project')?'Projects':pageTitles[location1.pathname]}</h2>
         </div>
         <div>
           { 
