@@ -9,7 +9,8 @@ import toast from 'react-hot-toast';
 const Sidebar = ({ sidebarOpen, onCross }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
+  const { user,credits } = useAuth();
+  const creditLimit=3;
 
   // Helper for consistent menu styling
   const MenuLink = ({ label, path, icon: Icon, onClick }) => {
@@ -69,19 +70,19 @@ const Sidebar = ({ sidebarOpen, onCross }) => {
       {/* Decorative circle */}
       <div className="absolute -top-6 -right-6 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
       
-      <p className="text-xs font-medium text-gray-300 mb-1">Monthly Credits</p>
+      <p className="text-xs font-medium text-gray-300 mb-1">Credits</p>
       <div className="flex items-end gap-1 mb-2">
-        <span className="text-2xl font-bold">12</span>
-        <span className="text-sm text-gray-400 mb-1">/ 20 used</span>
+        <span className="text-2xl font-bold">{creditLimit-credits}</span>
+        <span className="text-sm text-gray-400 mb-1">/ {creditLimit} used</span>
       </div>
       
       {/* Progress Bar */}
       <div className="w-full h-1.5 bg-gray-600 rounded-full overflow-hidden mb-3">
-        <div className="h-full bg-blue-400 w-[60%] rounded-full"></div>
+        <div className={`h-full bg-blue-400 w-[${Math.floor(((creditLimit-credits)/creditLimit)*100)}%] rounded-full`}></div>
       </div>
 
       <button 
-        onClick={() => navigate('/pricing')}
+        onClick={() => {}}
         className="w-full py-2 text-xs font-bold bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition-colors"
       >
         Upgrade Plan

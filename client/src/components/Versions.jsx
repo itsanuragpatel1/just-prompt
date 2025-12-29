@@ -1,8 +1,6 @@
 import React from 'react'
 import { TbLibraryPhoto } from "react-icons/tb";
 import { TbLivePhoto } from "react-icons/tb";
-import farmer from '../assets/farmer.avif'
-import placeholder from '../assets/placeholder.png'
 import { RiTimerFlashLine } from "react-icons/ri";
 
 const Versions = ({imagesArray,setSelectedImage,selectedImage}) => {
@@ -20,7 +18,7 @@ const Versions = ({imagesArray,setSelectedImage,selectedImage}) => {
 
 
   return (
-    <div className='flex flex-col gap-2 rounded-3xl border border-gray-300 bg-white p-2 px-6 md:px-7'>
+    <div className='flex flex-col gap-2 rounded-3xl border border-gray-300 bg-white p-2 px-6 md:px-7 shadow-md'>
         {/*text */}
         <div className='flex justify-between' >
             <div className='flex items-center gap-2 text-gray-500'>

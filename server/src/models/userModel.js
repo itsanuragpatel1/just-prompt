@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
     password: { type: String},
     avatar: { type: String },
     plan: { type: String, enum: ["free", "freemium", "premium"], default: "free" },
+    imageCredits : {type:Number,default : 3},
     refreshToken: String
 }, { timestamps: true })
 

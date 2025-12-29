@@ -190,6 +190,12 @@ const genImage = async (req, res) => {
 
         const userId = req.user;
 
+        const user = await userModel.findById(userId);
+
+    if (user.plan === "free" && user.imageCredits <= 0) {
+      return res.status(403).json({success: false,message: "Free limit reached."});
+    }
+
         if (!prompt && !upscale) {
             return res.status(400).json({ success: false, message: "prompt required" })
         }
@@ -239,6 +245,11 @@ const genImage = async (req, res) => {
 
         await projectObjectGet.save();
 
+    if (user.plan === "free") {
+      user.imageCredits -= 1;
+      await user.save();
+    }
+
         const finalProject = await projectModel
             .findById(projectId)
             .populate('editHistory')
@@ -246,7 +257,7 @@ const genImage = async (req, res) => {
 
         res
             .status(200)
-            .json({ success: true, project: finalProject, isNewProject, message: "all Fine" });
+            .json({ success: true, project: finalProject, isNewProject,remainingCredits: user.imageCredits, message: "all Fine" });
 
 
     } catch (error) {

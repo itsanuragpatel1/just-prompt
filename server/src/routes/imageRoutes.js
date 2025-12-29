@@ -8,7 +8,7 @@ const imageRoutes=Router();
 // imageRoutes.post('/edit',auth,upload.single('image'),editImage);
 imageRoutes.post('/generate' ,auth,upload.single('image'), genImage);
 imageRoutes.post('/re-run',auth,reRun)
-imageRoutes.post('/fix-face',fixFace)
-imageRoutes.post('/upscale',upscale)
+imageRoutes.post('/fix-face',auth,fixFace)
+imageRoutes.post('/upscale',auth,upscale)
 
 export {imageRoutes}

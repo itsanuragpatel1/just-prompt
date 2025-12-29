@@ -17,12 +17,12 @@ const Editor = ({selectedImage,setSelectedImage,prompt, setPrompt,applyHandler,i
     const {user}=useAuth();
 
   return (
-    <div className='flex flex-col gap-5 border border-gray-300 rounded-3xl bg-white p-2 px-5 md:px-7 shadow-sm'>
+    <div className='flex flex-col gap-5 border border-gray-300 rounded-3xl bg-white p-2 px-5 md:px-7 shadow-md'>
       
         {/* editor nav functionalites */}
         <div className='flex justify-between gap-3 flex-col sm:flex-row'>
             <div className='flex gap-3'>
-                <button className='featuresbtn' onClick={()=>{reRunHandler()}}>
+                <button className='featuresbtn ' onClick={()=>{reRunHandler()}}>
                     <BsArrowRepeat className='text-lg text-gray-600'/>
                     <p className='text-md font-[350] text-gray-600'>Re-Run</p>
                 </button>
@@ -63,7 +63,9 @@ const Editor = ({selectedImage,setSelectedImage,prompt, setPrompt,applyHandler,i
         </div>
 
         {/*prompt area*/}
-        <div className='rounded-3xl border border-gray-300 flex items-center py-2 px-3 sm:px-5'>
+        <div className='rounded-3xl border border-gray-300 flex items-center py-2 px-3 sm:px-5 shadow-sm focus-within:border-indigo-600
+    focus-within:ring-2 focus-within:ring-indigo-100
+    transition'>
             <MdAutoAwesome className='text-lg text-gray-600 hidden sm:block'/>
             <input type="text" className='flex-1 sm:px-3 text-lg text-gray-700 outline-0'  placeholder="Generate or edit — eg. 'create mountain view' or 'make it aesthetic" value={prompt} onChange={(e)=>{setPrompt(e.target.value)}} />
             <button onClick={()=>{user?applyHandler():toast.error("Please Login to Continue")}} className='flex items-center gap-2 rounded-3xl px-4 py-2 bg-blue-700 hover:bg-blue-800' >

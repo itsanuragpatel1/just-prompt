@@ -16,6 +16,7 @@ const AuthContextProvider=({children})=>{
 
       if(data.user){
         setUser(data.user);
+        setCredits(data.user.imageCredits);
         console.log(data.user);
       }
       setLoading(false);
@@ -26,9 +27,10 @@ const AuthContextProvider=({children})=>{
 
 
     const [user,setUser]=useState(null);
+    const [credits,setCredits]=useState(null);
 
     return(
-      <AuthContext.Provider  value={{user,setUser}} > 
+      <AuthContext.Provider  value={{user,setUser,credits,setCredits}} > 
         {children}
       </AuthContext.Provider>
 

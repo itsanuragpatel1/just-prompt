@@ -22,7 +22,7 @@ const Home = () => {
   const [prompt, setPrompt] = useState('');
   const location = useLocation();
   const isPresetFlowRef = useRef(false);
-  const {user}=useAuth();
+  const {user,setCredits}=useAuth();
 
 
   const navigate = useNavigate();
@@ -140,6 +140,7 @@ const Home = () => {
 
       setProjectObject(data.project);
       setSelectedImage(data.project.lastImageId.imageUrl);
+      setCredits(data.remainingCredits);
       setIsWorking(false);
 
 
