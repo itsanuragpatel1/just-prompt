@@ -11,6 +11,7 @@ const AuthContextProvider=({children})=>{
   useEffect(()=>{
     const getUser=async()=>{
       setLoading(true);
+      try {
       const endpoint=`${import.meta.env.VITE_BACKEND_URL}/api/user/getUser`;
       const {data}=await axios.get(endpoint,{withCredentials:true});
 
@@ -19,7 +20,11 @@ const AuthContextProvider=({children})=>{
         setCredits(data.user.imageCredits);
         console.log(data.user);
       }
-      setLoading(false);
+      } catch (error) {
+        console.log("error in get user ",error);
+      } finally{
+        setLoading(false);
+      }    
     }
 
     getUser();
@@ -30,7 +35,7 @@ const AuthContextProvider=({children})=>{
     const [credits,setCredits]=useState(null);
 
     return(
-      <AuthContext.Provider  value={{user,setUser,credits,setCredits}} > 
+      <AuthContext.Provider  value={{user,setUser,credits,setCredits,loading}} > 
         {children}
       </AuthContext.Provider>
 

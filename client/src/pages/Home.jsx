@@ -11,6 +11,7 @@ import { useRef } from 'react';
 import { autoPrompt } from '../assets/autoPrompt.js'
 import LoaderComp from '../components/LoaderComp.jsx'
 import { useAuth } from '../context/AuthContext'
+import { BsChevronDoubleRight } from 'react-icons/bs'
 
 const Home = () => {
 
@@ -56,19 +57,24 @@ const Home = () => {
   useEffect(() => {
     const getProject = async () => {
       setLoading(true);
-      const endpoint = `${import.meta.env.VITE_BACKEND_URL}/api/project/${projectId}`;
+      try {
+        const endpoint = `${import.meta.env.VITE_BACKEND_URL}/api/project/${projectId}`;
 
-      const { data } = await axios.get(endpoint, { withCredentials: true });
+        const { data } = await axios.get(endpoint, { withCredentials: true });
 
-      if (data.success) {
-        setSelectedImage(data.project.lastImageId.imageUrl)
-        setProjectObject(data.project);
-        toast.success(data.message);
-      } else {
-        toast.error(data.message);
+        if (data.success) {
+          setSelectedImage(data.project.lastImageId.imageUrl)
+          setProjectObject(data.project);
+          // toast.success(data.message);
+        } else {
+          toast.error(data.message);
+        }
+      } catch (error) {
+          console.log("error in getProject ",error);
+          toast.error(error.message);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
-
     };
 
     if (projectId) {

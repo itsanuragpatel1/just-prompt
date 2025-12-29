@@ -28,7 +28,7 @@ const App = () => {
             <Navbar onMenu={()=>{setSidebarOpen(true)}} sidebarOpen={sidebarOpen} setShowLogin={setShowLogin}/>      
              <Routes>
                 <Route path='/' element={<Home/>} />
-                <Route path='/project/:projectId' element={<Home/>} />
+                <Route path='/project/:projectId' element={<ProtectedRoute><Home/></ProtectedRoute>} />
                 <Route path='/presets' element={<Presets/>} />
                 <Route path='/gallary' element={<ProtectedRoute><Gallary/></ProtectedRoute>} />
                 <Route path='/profile' element={<ProtectedRoute><Profile/></ProtectedRoute>}/>
