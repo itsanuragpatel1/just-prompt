@@ -7,9 +7,9 @@ import Sidebar from './components/Sidebar'
 import Navbar from './components/Navbar'
 import Login from './pages/Login'
 import {Toaster} from 'react-hot-toast'
-import { ProtectedRoute } from './context/protectedRoute'
 import Profile from './pages/Profile'
 import Projects from './pages/Projects'
+import { ProtectedRoute } from './context/ProtectedRoute.jsx'
 
 const App = () => {
 
