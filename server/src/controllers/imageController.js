@@ -6,6 +6,7 @@ import axios from 'axios';
 import { FlyMyAI } from "flymyai-js-client";
 import FormData from "form-data";
 import { userModel } from "../models/userModel.js";
+import sharp from "sharp";
 
 
 const base64ToBuffer = (base64) => {
@@ -287,16 +288,42 @@ const reRun = async (req, res) => {
     }
 }
 
-const urlToCloudinaryUrl=async(url)=>{
-    try {
-        const arraybuffer=(await axios.get(url,{responseType:"arraybuffer"})).data;
-        const buffer=Buffer.from(arraybuffer);
-        const result=await uploadImage(buffer);
-        return result.secure_url;
-    } catch (error) {
-        console.log("error in urlToCloudinaryUrl", error);
+const MAX_SIZE = 10 * 1024 * 1024; 
+
+const urlToCloudinaryUrl = async (url) => {
+  try {
+    const arraybuffer = (
+      await axios.get(url, { responseType: "arraybuffer" })
+    ).data;
+
+    let buffer = Buffer.from(arraybuffer);
+
+    console.log("Original size:", (buffer.length / 1024 / 1024).toFixed(2), "MB");
+
+    if (buffer.length > MAX_SIZE) {
+      buffer = await sharp(buffer)
+        .resize({ width: 2000, withoutEnlargement: true })
+        .jpeg({ quality: 80 })
+        .toBuffer();
+
+      console.log(
+        "Compressed size:",
+        (buffer.length / 1024 / 1024).toFixed(2),
+        "MB"
+      );
     }
-}
+
+    if (buffer.length > MAX_SIZE) {
+      throw new Error("Image is still larger than 10MB after compression");
+    }
+
+    const result = await uploadImage(buffer);
+    return result.secure_url;
+  } catch (error) {
+    console.log("error in urlToCloudinaryUrl", error);
+    throw error;
+  }
+};
 
 const swapFaces = async (sourceUrl, targetUrl) => {
     const sourceBuffer = (await axios.get(sourceUrl, { responseType: 'arraybuffer' })).data;
@@ -367,6 +394,7 @@ const fixFace = async (req, res) => {
         }
 
         const fixedFaceUrl =await swapFaces(imageObj.imageUrl, faceImageUrl);
+        console.log(fixedFaceUrl);
 
         const fixedFaceUrl1=await urlToCloudinaryUrl(fixedFaceUrl);
 

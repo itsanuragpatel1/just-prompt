@@ -211,7 +211,7 @@ const Home = () => {
       setIsWorking(false);
     } catch (error) {
       console.log("error in reRunHandler", error);
-      toast.error("Something went wrong. Please try again.");
+      toast.error(error.response?.data?.message || "Something went wrong");
     }
     setIsWorking(false);
   };
@@ -247,7 +247,7 @@ const Home = () => {
       }
     } catch (error) {
       console.log("error in fix face handler", error);
-      toast.error("Something went wrong. Please try again.");
+      toast.error(error.response?.data?.message || "Something went wrong");
     } finally {
        setIsWorking(false);
     }
