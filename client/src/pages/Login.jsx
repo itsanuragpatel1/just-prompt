@@ -13,7 +13,7 @@ const Login = ({setShowLogin}) => {
     const [loading,setLoading]=useState(false);
     const [otp,setOtp]=useState('');
     const [showOtpPage,setShowOtpPage]=useState(false);
-    const {setUser}=useAuth();
+    const {setUser,setCredits}=useAuth();
 
     const submitHandler=async(e)=>{
         e.preventDefault()
@@ -30,6 +30,7 @@ const Login = ({setShowLogin}) => {
 
                 if(data.success){
                     setUser(data.user);
+                    setCredits(data.user.imageCredits);
                     toast.success(data.message);
                     setShowLogin(false);
                 }else{
@@ -66,6 +67,7 @@ const Login = ({setShowLogin}) => {
 
             if(data.success){
                 setUser(data.user);
+                setCredits(data.user.imageCredits);
                 toast.success(data.message);
                 setShowLogin(false);
 

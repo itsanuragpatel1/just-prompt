@@ -5,6 +5,7 @@ import { imageModel } from "../models/imageModel.js";
 import axios from 'axios';
 import { FlyMyAI } from "flymyai-js-client";
 import FormData from "form-data";
+import { userModel } from "../models/userModel.js";
 
 
 const base64ToBuffer = (base64) => {
@@ -262,7 +263,7 @@ const genImage = async (req, res) => {
 
     } catch (error) {
         console.log("error in gen Image controller", error);
-        res.status(500).json({ success: false, message: "generating image failed" })
+        res.status(500).json({ success: false, message: "Generating Image Failed" })
     }
 };
 

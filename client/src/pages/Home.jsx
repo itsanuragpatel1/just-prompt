@@ -157,7 +157,7 @@ const Home = () => {
 
     } catch (error) {
       console.log("error in applyHandler", error);
-
+      toast.error(error.response?.data?.message || "Something went wrong");
     } finally {
       setIsWorking(false);
     }

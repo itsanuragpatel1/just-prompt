@@ -72,18 +72,19 @@ const getProfile=async(req,res)=>{
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    const projects = await projectModel.find({ userId }, "editHistory");
+    const projects = await projectModel.find({ userId }).select("_id");
+
+    const projectIds = projects.map(p => p._id);
 
     const projectsCount=projects.length;
 
     let imagesCount = 0;
-    projects.forEach(project => {
-      imagesCount += project.editHistory?.length || 0;
-    });
+
+    const counts=await imageModel.find({projectId:{$in:projectIds},type:{$ne:"Upload"}}).countDocuments();
 
     const userObj=user.toObject();
 
-    userObj.imagesCount=imagesCount;
+    userObj.imagesCount=counts;
     userObj.projectsCount=projectsCount;
 
     res.status(200).json({success: true,message: "Profile fetched successfully", userObj});
