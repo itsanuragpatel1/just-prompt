@@ -45,7 +45,8 @@ const signup=async(req,res)=>{
         const options={
             httpOnly:true,
             sameSite:"none",
-            secure:true
+            secure:true,
+            maxAge: 7 * 24 * 60 * 60 * 1000
         }
 
         res
@@ -135,7 +136,8 @@ const verifyOtp=async(req,res)=>{
         const options={
             httpOnly:true,
             sameSite:"none",
-            secure:true
+            secure:true,
+            maxAge: 7 * 24 * 60 * 60 * 1000
         }
 
         const userObj=user.toObject();
@@ -183,7 +185,8 @@ const login=async(req,res)=>{
         const options={
             httpOnly:true,
             sameSite:"none",
-            secure:true
+            secure:true,
+            maxAge: 7 * 24 * 60 * 60 * 1000
         }
 
         const userObj=user.toObject();
@@ -283,7 +286,8 @@ const googleCallBack=async(req,res)=>{
         const options={
             httpOnly:true,
             sameSite:"none",
-            secure:true
+            secure:true,
+            maxAge: 7 * 24 * 60 * 60 * 1000
         }
 
     res.cookie("accessToken",accessToken,options)
