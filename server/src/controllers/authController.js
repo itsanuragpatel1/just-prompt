@@ -268,10 +268,14 @@ const googleCallBack=async(req,res)=>{
 
     const {name,email,picture}=googleUser;
 
-    const user=await userModel.findOne({email});
+    let user = await userModel.findOne({ email });
 
-    if(!user){
-        const user=await userModel.insertOne({fullName:name,email,avatar:picture});
+    if (!user) {
+    user = await userModel.create({
+        fullName: name,
+        email,
+        avatar: picture,
+    });
     }
 
     const accessToken=await generateAccessToken(user._id);
