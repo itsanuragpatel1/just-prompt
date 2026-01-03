@@ -23,10 +23,42 @@ const Home = () => {
   const [prompt, setPrompt] = useState('');
   const location = useLocation();
   const isPresetFlowRef = useRef(false);
-  const {user,setCredits}=useAuth();
+  const {user,setCredits,setUser}=useAuth();
 
 
   const navigate = useNavigate();
+
+useEffect(() => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get('token');
+  const authType = urlParams.get('auth');
+  
+  if (token && authType === 'google') {
+    setGoogleAuthToken(token);
+    
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+}, []);
+
+const setGoogleAuthToken = async (token) => {
+  try {
+    const { data } = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/api/auth/set-google-cookie`,
+      { token },
+      { withCredentials: true }
+    );
+    
+    if (data.success) {
+      setUser(data.user);
+      setCredits(data.user.imageCredits);
+      toast.success('Logged in with Google successfully!');
+    }
+  } catch (error) {
+    console.error('Error setting Google auth cookie:', error);
+    toast.error('Login failed. Please try again.');
+  }
+};
+
 
   useEffect(() => {
     const presetPrompt = location.state?.presetPrompt;

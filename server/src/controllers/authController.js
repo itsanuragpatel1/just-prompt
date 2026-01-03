@@ -44,7 +44,7 @@ const signup=async(req,res)=>{
 
         const options={
             httpOnly:true,
-            sameSite:"none",
+            sameSite:"None",
             secure:true,
             maxAge: 7 * 24 * 60 * 60 * 1000,
             path:'/'
@@ -136,7 +136,7 @@ const verifyOtp=async(req,res)=>{
 
         const options={
             httpOnly:true,
-            sameSite:"none",
+            sameSite:"None",
             secure:true,
             maxAge: 7 * 24 * 60 * 60 * 1000,
             path:'/'
@@ -186,7 +186,7 @@ const login=async(req,res)=>{
 
         const options={
             httpOnly:true,
-            sameSite:"none",
+            sameSite:"None",
             secure:true,
             maxAge: 7 * 24 * 60 * 60 * 1000,
             path:'/'
@@ -214,7 +214,7 @@ const logout=async(req,res)=>{
 
         const options={
             httpOnly:true,
-            sameSite:"none",
+            sameSite:"None",
             secure:true,
             path:'/'
         }
@@ -287,20 +287,52 @@ const googleCallBack=async(req,res)=>{
 
         const options={
             httpOnly:true,
-            sameSite:"none",
+            sameSite:"None",
             secure:true,
             maxAge: 7 * 24 * 60 * 60 * 1000,
             path:'/'
         }
-
-    res
-      .cookie("accessToken",accessToken,options)
-      .redirect(`${process.env.FRONTEND_URL}/`)
+    
+    res.redirect(`${process.env.FRONTEND_URL}/?token=${accessToken}&auth=google`);
         
     } catch (error) {
         console.log("error in google call back controller",error);
     }
 }
+
+const setGoogleCookie = async (req, res) => {
+  try {
+    const { token } = req.body;
+    
+    if (!token) {
+      return res.status(400).json({ success: false, message: "Token required" });
+    }
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await userModel.findById(decoded.userId).select('-password -refreshToken');
+    
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+    
+    const options = {
+      httpOnly: true,
+      sameSite: "None",
+      secure: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/'
+    };
+    
+    res
+      .cookie('accessToken', token, options)
+      .status(200)
+      .json({ success: true, user, message: "Cookie set successfully" });
+      
+  } catch (error) {
+    console.error('Error setting Google cookie:', error);
+    res.status(500).json({ success: false, message: "Failed to set cookie" });
+  }
+};
 
 const updatePassword = async (req, res) => {
   try {
@@ -419,4 +451,4 @@ const updateAvatar = async (req, res) => {
 };
 
 
-export {signup,login,logout,sendOtp,verifyOtp,googleLogin,googleCallBack,updatePassword,updateProfile,updateAvatar};
+export {signup,login,logout,sendOtp,verifyOtp,googleLogin,googleCallBack,updatePassword,updateProfile,updateAvatar,setGoogleCookie};
