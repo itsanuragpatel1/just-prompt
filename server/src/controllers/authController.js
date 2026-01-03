@@ -214,7 +214,7 @@ const logout=async(req,res)=>{
 
         const options={
             httpOnly:true,
-            sameSite:'none',
+            sameSite:"none",
             secure:true,
             path:'/'
         }
@@ -293,9 +293,9 @@ const googleCallBack=async(req,res)=>{
             path:'/'
         }
 
-    res.cookie("accessToken",accessToken,options)
-
-    res.redirect(`${process.env.FRONTEND_URL}/`)
+    res
+      .cookie("accessToken",accessToken,options)
+      .redirect(`${process.env.FRONTEND_URL}/`)
         
     } catch (error) {
         console.log("error in google call back controller",error);
