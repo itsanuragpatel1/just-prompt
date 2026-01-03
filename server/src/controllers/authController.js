@@ -46,7 +46,8 @@ const signup=async(req,res)=>{
             httpOnly:true,
             sameSite:"none",
             secure:true,
-            maxAge: 7 * 24 * 60 * 60 * 1000
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+            path:'/'
         }
 
         res
@@ -137,7 +138,8 @@ const verifyOtp=async(req,res)=>{
             httpOnly:true,
             sameSite:"none",
             secure:true,
-            maxAge: 7 * 24 * 60 * 60 * 1000
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+            path:'/'
         }
 
         const userObj=user.toObject();
@@ -186,7 +188,8 @@ const login=async(req,res)=>{
             httpOnly:true,
             sameSite:"none",
             secure:true,
-            maxAge: 7 * 24 * 60 * 60 * 1000
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+            path:'/'
         }
 
         const userObj=user.toObject();
@@ -212,11 +215,12 @@ const logout=async(req,res)=>{
         const options={
             httpOnly:true,
             sameSite:'none',
-            secure:true
+            secure:true,
+            path:'/'
         }
         
         res
-        .clearCookie("accessToken")
+        .clearCookie("accessToken",options)
         .json({success:true,message:"Logout Succesfully"})
         
     } catch (error) {
@@ -260,8 +264,6 @@ const googleCallBack=async(req,res)=>{
       }
     );
 
-    console.log(data);
-
     const { id_token } = data;
 
     // Decode ID token → contains user info
@@ -287,7 +289,8 @@ const googleCallBack=async(req,res)=>{
             httpOnly:true,
             sameSite:"none",
             secure:true,
-            maxAge: 7 * 24 * 60 * 60 * 1000
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+            path:'/'
         }
 
     res.cookie("accessToken",accessToken,options)

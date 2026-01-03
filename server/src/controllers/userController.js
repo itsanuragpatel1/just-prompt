@@ -5,17 +5,7 @@ import { imageModel } from '../models/imageModel.js';
 
 const getUser=async(req,res)=>{
     try {
-        const {accessToken}=req.cookies;
-
-        if(!accessToken){
-            return res.status(400).json({success:false,message:"accessToken not present"})
-        }
-
-        const {userId}=jwt.verify(accessToken,process.env.JWT_SECRET);
-
-        if(!userId){
-            return res.status(400).json({success:false,message:"userId not present"})
-        }
+        const userId=req.user;
 
         const user=await userModel.findById(userId);
 

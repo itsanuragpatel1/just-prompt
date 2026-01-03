@@ -4,7 +4,7 @@ import { auth } from "../middlewares/authMiddleware.js";
 
 const userRoutes=Router();
 
-userRoutes.get('/getUser',getUser);
+userRoutes.get('/getUser',auth,getUser);
 userRoutes.get('/profile',auth,getProfile);
 
 userRoutes.get('/project/:type',auth,projects);
