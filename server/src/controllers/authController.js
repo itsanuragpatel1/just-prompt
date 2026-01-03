@@ -216,11 +216,12 @@ const logout=async(req,res)=>{
             httpOnly:true,
             sameSite:"None",
             secure:true,
-            path:'/'
+            path:'/',
+            expires: new Date(0)
         }
         
         res
-        .clearCookie("accessToken",options)
+        .cookie("accessToken","",options)
         .json({success:true,message:"Logout Succesfully"})
         
     } catch (error) {

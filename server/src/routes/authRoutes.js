@@ -10,7 +10,7 @@ const authRoutes=Router();
 authRoutes.post('/send-otp',sendOtp);
 authRoutes.post('/verify-otp',verifyOtp);
 authRoutes.post('/login',login);
-authRoutes.get('/logout',logout);
+authRoutes.post('/logout',logout);
 authRoutes.get('/google',googleLogin);
 authRoutes.get('/google/callback',googleCallBack);
 authRoutes.post('/set-google-cookie', setGoogleCookie);

@@ -29,7 +29,7 @@ const Navbar = ({onMenu,setShowLogin}) => {
   const logoutHandle=async()=>{
     try {
       const endpoint=`${import.meta.env.VITE_BACKEND_URL}/api/auth/logout`;
-      const {data}=await axios.get(endpoint,{withCredentials:true});
+      const {data}=await axios.post(endpoint,{},{withCredentials:true});
 
       if(data.success){
         setUser(null);
